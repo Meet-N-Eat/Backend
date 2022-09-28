@@ -128,4 +128,18 @@ router.delete('/:restaurantId/reviews/:reviewId', requireToken, (req, res, next)
     .catch(next)
 })
 
+// Likes
+// ========================================================================================================
+
+// Get likes by Restaurant ID
+// GET /restaurants/:restaurantId/likes
+router.get('/restaurants/:restaurantId/likes', requireToken, (req, res, next) => {
+  Restaurant.findById(req.params.restaurantId)
+  .select('userLikes')
+  .then(likes => res.json(likes))
+  .catch(next)
+})
+
+
+
 module.exports = router;

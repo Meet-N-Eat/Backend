@@ -1,0 +1,91 @@
+{
+   "name": "North India Restaurant",
+   "image_url": "https://s3-media1.fl.yelpcdn.com/bphoto/_nJ2VTeTZe5-gePr8PXTxg/o.jpg",
+   "is_closed": false,
+   "url": "https://www.yelp.com/biz/north-india-restaurant-san-francisco-7?adjust_creative=PKFU5g36rFayBfle34hYWw&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_lookup&utm_source=PKFU5g36rFayBfle34hYWw",
+   "display_phone": "(415) 348-1234",
+   "categories": [
+       {
+           "title": "Indian"
+       },
+       {
+           "title": "Food Delivery Services"
+       },
+       {
+           "title": "Caterers"
+       }
+   ],
+   "location": {
+       "address1": "123 Second St",
+       "address2": "",
+       "address3": "",
+       "city": "San Francisco",
+       "zip_code": "94105",
+       "country": "US",
+       "state": "CA",
+       "display_address": [
+           "123 Second St",
+           "San Francisco, CA 94105"
+       ],
+       "cross_streets": ""
+   },
+   "coordinates": {
+       "latitude": 37.787789124691,
+       "longitude": -122.399305736113
+   },
+   "photos": [
+       "https://s3-media1.fl.yelpcdn.com/bphoto/_nJ2VTeTZe5-gePr8PXTxg/o.jpg",
+       "https://s3-media4.fl.yelpcdn.com/bphoto/W2oBBWPGm3bRYEuHKGMtCw/o.jpg",
+       "https://s3-media1.fl.yelpcdn.com/bphoto/AHm5LPigScMuUG-bT9jqdw/o.jpg"
+   ],
+   "price": "$$",
+   "hours": [
+       {
+           "open": [
+               {
+                   "is_overnight": false,
+                   "start": "1000",
+                   "end": "2300",
+                   "day": 0
+               },
+               {
+                   "is_overnight": false,
+                   "start": "1000",
+                   "end": "2300",
+                   "day": 1
+               },
+               {
+                   "is_overnight": false,
+                   "start": "1000",
+                   "end": "2300",
+                   "day": 2
+               },
+               {
+                   "is_overnight": false,
+                   "start": "1000",
+                   "end": "2300",
+                   "day": 3
+               },
+               {
+                   "is_overnight": false,
+                   "start": "1000",
+                   "end": "2330",
+                   "day": 4
+               },
+               {
+                   "is_overnight": false,
+                   "start": "1000",
+                   "end": "2330",
+                   "day": 5
+               },
+               {
+                   "is_overnight": false,
+                   "start": "1000",
+                   "end": "2300",
+                   "day": 6
+               }
+           ]
+
+       }
+   ]
+}

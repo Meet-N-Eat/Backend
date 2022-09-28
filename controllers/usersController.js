@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models-and-schemas/user')
+const Restaurant = require('../models-and-schemas/restaurant')
 const bcrypt = require('bcrypt')
 const { requireToken, createUserToken } = require('../middleware/auth')
 
@@ -156,6 +157,7 @@ router.delete('/:userId/friends/:friendId', requireToken, (req, res, next) => {
 router.post('/:userId/likedrestaurants/:restaurantId', requireToken, (req, res, next) => {
     User.findByIdAndUpdate(req.params.userId, { $push: { likedrestaurants: req.params.restaurantId }}, { new: true })
         .then(newLikedRestaurants => res.json(newLikedRestaurants))
+        .then(() => Restaurant.findByIdAndUpdate(req.params.restaurantId, { $push: {userLikes: req.params.userId}} ))
         .catch(next)
         console.log('liked restaurant added')
 })

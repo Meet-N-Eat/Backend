@@ -36,7 +36,8 @@ const restaurantSchema = new mongoose.Schema({
     reviews: [reviewSchema],
     userLikes: [{
         type: ObjectId,
-        ref: 'User'}],
+        ref: 'User'
+    }],
 })
 
 const Restaurant = mongoose.model('Restaurant', restaurantSchema)

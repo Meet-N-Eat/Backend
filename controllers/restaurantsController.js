@@ -140,6 +140,16 @@ router.get('/restaurants/:restaurantId/likes', requireToken, (req, res, next) =>
   .catch(next)
 })
 
-
+// Create a Restaurant Like
+// POST /restaurants/:restaurantId/likes/:userId
+router.post('/restaurants/:restaurantId/likes/:userId', (req, res, next) => {
+  Restaurant.findById(req.params.restaurantId)
+  .then(restaurant => {
+    restaurant.userLikes.push(req.params.userId)
+    restaurant.save()
+    res.json(restaurant.userLikes)
+  })
+  .catch(next)
+})
 
 module.exports = router;

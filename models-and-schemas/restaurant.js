@@ -1,6 +1,6 @@
 const mongoose = require('../db/connection')
 const reviewSchema = require('./review')
-const user = require('./user')
+const ObjectId = mongoose.Schema.Types.ObjectId
 
 const restaurantSchema = new mongoose.Schema({
     name: String,

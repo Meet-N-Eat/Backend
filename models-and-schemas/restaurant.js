@@ -1,5 +1,6 @@
 const mongoose = require('../db/connection')
 const reviewSchema = require('./review')
+const user = require('./user')
 
 const restaurantSchema = new mongoose.Schema({
     name: String,
@@ -33,6 +34,9 @@ const restaurantSchema = new mongoose.Schema({
         }]
     }],
     reviews: [reviewSchema],
+    userLikes: [{
+        type: ObjectId,
+        ref: 'User'}],
 })
 
 const Restaurant = mongoose.model('Restaurant', restaurantSchema)

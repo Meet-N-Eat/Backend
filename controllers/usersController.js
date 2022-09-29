@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models-and-schemas/user')
+const Restaurant = require('../models-and-schemas/restaurant')
 const bcrypt = require('bcrypt')
 const { requireToken, createUserToken } = require('../middleware/auth')
 
@@ -39,7 +40,7 @@ router.get('/:id', requireToken, async (req, res, next) => {
 router.get('/username/:username', requireToken, async (req, res, next) => {
     try {
         const user = await User.findOne({ username: req.params.username })
-        .populate('likedrestaurants')
+        // .populate('likedrestaurants')
         .populate('friends')
         .populate('messages')
         .populate('events.restaurant')
@@ -155,16 +156,18 @@ router.delete('/:userId/friends/:friendId', requireToken, (req, res, next) => {
 // POST /users/:userId/likedrestaurants/:restaurantId
 router.post('/:userId/likedrestaurants/:restaurantId', requireToken, (req, res, next) => {
     User.findByIdAndUpdate(req.params.userId, { $push: { likedrestaurants: req.params.restaurantId }}, { new: true })
-        .then(newLikedRestaurants => res.json(newLikedRestaurants))
+        .then(user => res.json(user))
+        .then(() => Restaurant.findByIdAndUpdate(req.params.restaurantId, { $push: {userLikes: req.params.userId}} ))
         .catch(next)
-        console.log('liked restaurant added')
+    console.log('liked restaurant added')
 })
 
 // Delete Liked Restaurant
 // DELETE /users/:userId/likedrestaurants/:restaurantId
 router.delete('/:userId/likedrestaurants/:restaurantId', requireToken, (req, res, next) => {
-    User.findByIdAndUpdate(req.params.userId, { $pullAll: { likedrestaurants: [req.params.restaurantId] }}, { new: true })
-        .then(newLikedRestaurants => res.json(newLikedRestaurants))
+    User.findByIdAndUpdate(req.params.userId, { $pullAll: { likedrestaurants: [req.params.restaurantId] }}, { new: true } )
+        .then(user => res.json(user))
+        .then(() => Restaurant.findByIdAndUpdate(req.params.restaurantId, { $pullAll: { userLikes: [req.params.userId] }} ))
         .catch(next)
     console.log('deleted liked restaurant')
 })

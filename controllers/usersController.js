@@ -40,7 +40,7 @@ router.get('/:id', requireToken, async (req, res, next) => {
 router.get('/username/:username', requireToken, async (req, res, next) => {
     try {
         const user = await User.findOne({ username: req.params.username })
-        .populate('likedrestaurants')
+        // .populate('likedrestaurants')
         .populate('friends')
         .populate('messages')
         .populate('events.restaurant')
@@ -155,9 +155,9 @@ router.delete('/:userId/friends/:friendId', requireToken, (req, res, next) => {
 // Create Liked Restaurant
 // POST /users/:userId/likedrestaurants/:restaurantId
 router.post('/:userId/likedrestaurants/:restaurantId', requireToken, (req, res, next) => {
-    User.findByIdAndUpdate(req.params.userId, { $push: { likedrestaurants: req.params.restaurantId }})
-        .then(() => Restaurant.findByIdAndUpdate(req.params.restaurantId, { $push: {userLikes: req.params.userId}}, { new: true } ))
-        .then(restaurant => res.json(restaurant))
+    User.findByIdAndUpdate(req.params.userId, { $push: { likedrestaurants: req.params.restaurantId }}, { new: true })
+        .then(user => res.json(user))
+        .then(() => Restaurant.findByIdAndUpdate(req.params.restaurantId, { $push: {userLikes: req.params.userId}} ))
         .catch(next)
     console.log('liked restaurant added')
 })
@@ -165,9 +165,9 @@ router.post('/:userId/likedrestaurants/:restaurantId', requireToken, (req, res, 
 // Delete Liked Restaurant
 // DELETE /users/:userId/likedrestaurants/:restaurantId
 router.delete('/:userId/likedrestaurants/:restaurantId', requireToken, (req, res, next) => {
-    User.findByIdAndUpdate(req.params.userId, { $pullAll: { likedrestaurants: [req.params.restaurantId] }})
-        .then(() => Restaurant.findByIdAndUpdate(req.params.restaurantId, { $pullAll: { userLikes: [req.params.userId] }}, { new: true } ))
-        .then(restaurant => res.json(restaurant))
+    User.findByIdAndUpdate(req.params.userId, { $pullAll: { likedrestaurants: [req.params.restaurantId] }}, { new: true } )
+        .then(user => res.json(user))
+        .then(() => Restaurant.findByIdAndUpdate(req.params.restaurantId, { $pullAll: { userLikes: [req.params.userId] }} ))
         .catch(next)
     console.log('deleted liked restaurant')
 })

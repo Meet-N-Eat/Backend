@@ -19,6 +19,7 @@ router.get('/', requireToken, (req, res, next) => {
 // GET /restaurants/:id
 router.get('/:id', requireToken, (req, res, next) => {
   Restaurant.findById(req.params.id)
+    .populate('userLikes')
     .then((restaurants) => res.json(restaurants))
     .catch(next);
 });

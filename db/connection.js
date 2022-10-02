@@ -10,7 +10,7 @@ const mongoURI = process.env.DATABASE_URL;
 const db = mongoose.connection;
 
 // Connect to Mongo
-mongoose.connect(mongoURI);
+mongoose.connect(mongoURI, { autoIndex: false });
 
 // Connection Error/Success - optional but can be helpful
 // Define callback functions for various events

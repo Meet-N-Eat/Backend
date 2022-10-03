@@ -3,7 +3,8 @@ const router = express.Router();
 const User = require('../models-and-schemas/user')
 const Restaurant = require('../models-and-schemas/restaurant')
 const bcrypt = require('bcrypt')
-const { requireToken, createUserToken } = require('../middleware/auth')
+const { requireToken, createUserToken } = require('../middleware/auth');
+const { default: mongoose } = require('mongoose');
 
 // User CRUD
 // ========================================================================================================
@@ -212,20 +213,42 @@ router.delete('/:userId/messages/:messageId', requireToken, (req, res, next) => 
 // Create event
 // POST /users/events/sender/:senderId/restaurant/:restaurantId
 router.post('/events/sender/:senderId/restaurant/:restaurantId', requireToken, (req, res, next) => {
-    User.findByIdAndUpdate(req.params.senderId, { $push: { events: {restaurant: req.params.restaurantId, participants: req.body.participants }}}, { new: true })
-       .then(user => {
-            console.log(req.body.participants)
-            res.json(user)
-       })
+    const event = {
+        restaurant: req.params.restaurantId,
+        date: req.body.date,
+        participants: req.body.participants,
+        createdBy: req.params.senderId
+    }
+ 
+    User.find({ _id: { $in: req.body.participants } })
+        .then(participants => {
+            console.log(participants)
+            participants.forEach(participant => {
+                participant.events.push(event)
+                participant.save()
+            })
+            res.send('Event created')
+        })
        .catch(next)
-       console.log('event created')
+ })
+
+ // Edit event
+ // PUT /users/events/sender/:senderId/restaurant/:restaurantId
+ router.put('/events/sender/:senderId/restaurant/:restaurantId', requireToken, (req, res, next) => {
+
  })
 
 // Delete event
 // Delete /users/events/:eventId/sender/:senderId
 router.delete('/events/:eventId/sender/:senderId', requireToken, (req, res, next) => {
-    User.findByIdAndUpdate(req.params.senderId, { $pull: { events: { _id: req.params.eventId} }}, { new: true })
-        .then(user => res.json(user))
+    User.find({ 'events._id': req.params.eventId })
+        .then(users => {
+            users.forEach(user => {
+                user.events = user.events.filter(event => event._id != req.params.eventId)
+                user.save()
+            })
+            res.send('Event deleted')
+        })
         .catch(next)
 })
 

@@ -32,7 +32,11 @@ const userSchema = new mongoose.Schema({
       type: ObjectId,
       ref:'User'
     }],
-    date: Date
+    date: Date,
+    createdBy: {
+      type: ObjectId,
+      ref: 'User'
+    }
   }],
   password: {
     type: String,

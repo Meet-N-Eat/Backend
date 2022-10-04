@@ -221,10 +221,9 @@ router.post('/events/sender/:senderId/restaurant/:restaurantId', requireToken, (
                 date: req.body.date,
                 participants: req.body.participants,
                 createdBy: req.params.senderId,
-                eventId: new mongoose.Types.ObjectId
+                _id: new mongoose.Types.ObjectId
             }
 
-            console.log(participants)
             participants.forEach(participant => {
                 participant.events.push(event)
                 participant.save()
@@ -232,26 +231,54 @@ router.post('/events/sender/:senderId/restaurant/:restaurantId', requireToken, (
             res.send('Event created')
         })
        .catch(next)
+    console.log('Event created')
  })
 
- // Edit event
- // PUT /users/events/:eventId/sender/:senderId
- router.put('/events/:eventId/sender/:senderId', requireToken, (req, res, next) => {
+// Edit event - Must send eventId field in event from frontend, _id for event won't work across all participants
+// PUT /users/events/:eventId
+router.put('/events/:eventId', requireToken, (req, res, next) => {
+    // Get all users with the event
+    User.find({ 'events._id': req.params.eventId })
+        .then(users => {
+            // Delete event for users that do not appear in participants list
+            users.forEach(user => {
+                if(!(req.body.participants.find(participantId => participantId == user._id))) {
+                    user.events = user.events.filter(event => event._id != req.params.eventId)
+                    user.save()
+                }
+            })
+            
+            // Get all participants
+            User.find({ _id: { $in: req.body.participants } })
+            .then(participants => {
+                // Edit event for participants already invited, or add event for new participants
+                participants.forEach(participant => {
+                    const index = participant.events.findIndex(event => event._id == req.params.eventId)
+                    
+                    index != -1 ? participant.events[index] = req.body : participant.events.push(req.body)
+                    participant.save()
+                })
+            })
 
- })
+            res.send('Event updated')
+        })
+    .catch(next)
+    console.log('Event updated')
+})
 
-// Delete event
+// Delete event - Must send eventId field in event from frontend, _id for event won't work across all participants
 // Delete /users/events/:eventId
 router.delete('/events/:eventId', requireToken, (req, res, next) => {
-    User.find({ 'events.eventId': req.params.eventId })
+    User.find({ 'events._id': req.params.eventId })
         .then(users => {
             users.forEach(user => {
-                user.events = user.events.filter(event => event.eventId != req.params.eventId)
+                user.events = user.events.filter(event => event._id != req.params.eventId)
                 user.save()
             })
             res.send('Event deleted')
         })
         .catch(next)
+    console.log('Event deleted')
 })
 
 module.exports = router;

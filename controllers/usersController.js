@@ -213,15 +213,17 @@ router.delete('/:userId/messages/:messageId', requireToken, (req, res, next) => 
 // Create event
 // POST /users/events/sender/:senderId/restaurant/:restaurantId
 router.post('/events/sender/:senderId/restaurant/:restaurantId', requireToken, (req, res, next) => {
-    const event = {
-        restaurant: req.params.restaurantId,
-        date: req.body.date,
-        participants: req.body.participants,
-        createdBy: req.params.senderId
-    }
- 
     User.find({ _id: { $in: req.body.participants } })
-        .then(participants => {
+    .then(participants => {
+
+            const event = {
+                restaurant: req.params.restaurantId,
+                date: req.body.date,
+                participants: req.body.participants,
+                createdBy: req.params.senderId,
+                eventId: new mongoose.Types.ObjectId
+            }
+
             console.log(participants)
             participants.forEach(participant => {
                 participant.events.push(event)
@@ -233,18 +235,18 @@ router.post('/events/sender/:senderId/restaurant/:restaurantId', requireToken, (
  })
 
  // Edit event
- // PUT /users/events/sender/:senderId/restaurant/:restaurantId
- router.put('/events/sender/:senderId/restaurant/:restaurantId', requireToken, (req, res, next) => {
+ // PUT /users/events/:eventId/sender/:senderId
+ router.put('/events/:eventId/sender/:senderId', requireToken, (req, res, next) => {
 
  })
 
 // Delete event
-// Delete /users/events/:eventId/sender/:senderId
-router.delete('/events/:eventId/sender/:senderId', requireToken, (req, res, next) => {
-    User.find({ 'events._id': req.params.eventId })
+// Delete /users/events/:eventId
+router.delete('/events/:eventId', requireToken, (req, res, next) => {
+    User.find({ 'events.eventId': req.params.eventId })
         .then(users => {
             users.forEach(user => {
-                user.events = user.events.filter(event => event._id != req.params.eventId)
+                user.events = user.events.filter(event => event.eventId != req.params.eventId)
                 user.save()
             })
             res.send('Event deleted')

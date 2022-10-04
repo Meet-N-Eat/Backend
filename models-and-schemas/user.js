@@ -36,7 +36,8 @@ const userSchema = new mongoose.Schema({
     createdBy: {
       type: ObjectId,
       ref: 'User'
-    }
+    },
+    eventId: ObjectId
   }],
   password: {
     type: String,

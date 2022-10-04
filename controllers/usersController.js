@@ -158,6 +158,10 @@ router.delete('/:userId/friends/:friendId', requireToken, (req, res, next) => {
 router.post('/:userId/likedrestaurants/:restaurantId', requireToken, (req, res, next) => {
     User.findByIdAndUpdate(req.params.userId, { $push: { likedrestaurants: req.params.restaurantId }}, { new: true })
         .populate('likedrestaurants')
+        .populate('friends')
+        .populate('messages')
+        .populate('events.restaurant')
+        .populate('events.participants')
         .then(user => res.json(user))
         .then(() => Restaurant.findByIdAndUpdate(req.params.restaurantId, { $push: {userLikes: req.params.userId}} ))
         .catch(next)
@@ -169,6 +173,10 @@ router.post('/:userId/likedrestaurants/:restaurantId', requireToken, (req, res, 
 router.delete('/:userId/likedrestaurants/:restaurantId', requireToken, (req, res, next) => {
     User.findByIdAndUpdate(req.params.userId, { $pullAll: { likedrestaurants: [req.params.restaurantId] }}, { new: true })
         .populate('likedrestaurants')
+        .populate('friends')
+        .populate('messages')
+        .populate('events.restaurant')
+        .populate('events.participants')
         .then(user => res.json(user))
         .then(() => Restaurant.findByIdAndUpdate(req.params.restaurantId, { $pullAll: { userLikes: [req.params.userId] }} ))
         .catch(next)
@@ -247,7 +255,7 @@ router.put('/events/:eventId', requireToken, (req, res, next) => {
                     user.save()
                 }
             })
-            
+
             // Get all participants
             User.find({ _id: { $in: req.body.participants } })
             .then(participants => {

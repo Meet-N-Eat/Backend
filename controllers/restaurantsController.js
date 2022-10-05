@@ -13,6 +13,7 @@ router.get('/', (req, res, next) => {
   Restaurant.find({})
     .then((restaurants) => res.json(restaurants))
     .catch(next);
+  console.log('Get all restaurants')
 });
 
 // Show
@@ -22,6 +23,7 @@ router.get('/:id', (req, res, next) => {
     .populate('userLikes')
     .then((restaurants) => res.json(restaurants))
     .catch(next);
+  console.log('Get restaurant by ID')
 });
 
 // Create
@@ -30,14 +32,16 @@ router.post('/', (req, res, next) => {
   Restaurant.create(req.body)
     .then((restaurant) => res.status(201).json(restaurant))
     .catch(next);
+  console.log('Create restaurant')
 });
 
 // Update
 // PUT /restaurants/:id
 router.put('/:id', (req, res, next) => {
   Restaurant.findByIdAndUpdate(req.params.id, req.body, { new: true })
-  .then((restaurant) => res.json(restaurant))
-  .catch(next)
+    .then((restaurant) => res.json(restaurant))
+    .catch(next)
+  console.log('Update restaurant')
 });
 
 // Delete
@@ -46,6 +50,7 @@ router.delete('/:id', (req, res, next) => {
   Restaurant.findByIdAndDelete(req.params.id)
    .then((restaurant) => res.json(restaurant))
    .catch(next)
+  console.log('Delete restaurant')
 });
 
 // Search Results
@@ -92,6 +97,7 @@ router.get('/results/:searchString', (req, res, next) => {
     .then(restaurants => res.json(restaurants))
     .catch(next)
   }
+  console.log('Search results')
 
 })
 
@@ -105,7 +111,7 @@ router.get('/:restaurantId/reviews', requireToken, (req, res, next) => {
     .select('reviews')
     .then(reviews => res.json(reviews))
     .catch(next)
-    console.log('got restaurant reviews')
+  console.log('got restaurant reviews')
 })
 
 // Create a Review
@@ -118,7 +124,7 @@ router.post('/:restaurantId/reviews', requireToken, (req, res, next) => {
         res.json(restaurant.reviews)
       })
       .catch(next)
-      console.log('review created')
+  console.log('review created')
 })
 
 // Delete a Review
@@ -127,6 +133,7 @@ router.delete('/:restaurantId/reviews/:reviewId', requireToken, (req, res, next)
   Restaurant.findByIdAndUpdate(req.params.restaurantId, { $pull: { reviews: { _id: req.params.reviewId }}}, { new: true })
     .then(restaurant => res.json(restaurant.reviews))
     .catch(next)
+  console.log('review deleted')
 })
 
 module.exports = router;

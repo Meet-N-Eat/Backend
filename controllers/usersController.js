@@ -18,6 +18,7 @@ router.get('/', requireToken, async (req, res, next) => {
     } catch(err) {
         next(err)
     }
+    console.log('Get all users')
 })
 
 // Get user by ID
@@ -34,6 +35,7 @@ router.get('/:id', requireToken, async (req, res, next) => {
     } catch(err) {
         next(err)
     }
+    console.log('Get users by ID')
 })
 
 // Get user by username
@@ -50,6 +52,7 @@ router.get('/username/:username', requireToken, async (req, res, next) => {
     } catch(err) {
         next(err)
     }
+    console.log('Get users by username')
 })
 
 // Sign Up
@@ -64,6 +67,7 @@ router.post('/signup', (req, res, next) => {
     .then(user => User.create(user))
     .then(user => res.status(201).json(user))
     .catch(next)
+    console.log('Sign Up')
 })
 
 // Sign In
@@ -73,12 +77,12 @@ router.post('/signin', (req, res, next) => {
         .then(user => createUserToken(req, user))
         .then(token => res.json({ token }))
         .catch(next)
+    console.log('Sign In')
 })
 
 // Update
 // PUT /users/:id
 router.put('/:id', requireToken, async (req, res, next) => {
-    console.log('get user by ID')
     try {
         const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {new: true})
         if (updatedUser) {
@@ -89,6 +93,7 @@ router.put('/:id', requireToken, async (req, res, next) => {
     } catch(err) {
         next(err)
     }
+    console.log('User updated')
 })
 
 // Delete
@@ -100,6 +105,7 @@ router.delete('/:id', requireToken, async (req, res, next) => {
     } catch(err) {
         next(err)
     }
+    console.log('User deleted')
 })
 
 // Friend Invites
@@ -115,6 +121,7 @@ router.post('/:userId/friendInvites', requireToken, (req, res, next) => {
             res.json(user)
         })
         .catch(next)
+    console.log('Create friend invite')
  })
  
  // Delete friend invite
@@ -123,6 +130,7 @@ router.post('/:userId/friendInvites', requireToken, (req, res, next) => {
     User.findByIdAndUpdate(req.params.userId, { $pull: { friendinvites: { _id: req.params.inviteId}}}, { new: true })
        .then(user => res.json(user))
        .catch(next)
+    console.log('Delete friend invite')
  })
 
 // Friends
@@ -137,6 +145,7 @@ router.post('/:userId/friends/:friendId', requireToken, (req, res, next) => {
                 .then(() => res.json(user))
             })
             .catch(next)
+    console.log('Create friend')
 })
 
 // Delete friend
@@ -148,6 +157,7 @@ router.delete('/:userId/friends/:friendId', requireToken, (req, res, next) => {
                 .then(() => res.json(user))
             })
             .catch(next)
+    console.log('Delete friend')
 })
 
 // Liked Restaurants
@@ -193,6 +203,7 @@ router.get('/:userId/messages', requireToken, (req, res, next) => {
         .select('messages')
         .then(messages => res.json(messages))
         .catch(next)
+    console.log('Get message by User ID')
 })
 
 // Create message
@@ -205,6 +216,7 @@ router.post('/:recipientId/messages', requireToken, (req, res, next) => {
          res.json(user)
      })
        .catch(next)
+    console.log('Create message')
  })
  
 // Delete message
@@ -213,6 +225,7 @@ router.delete('/:userId/messages/:messageId', requireToken, (req, res, next) => 
     User.findByIdAndUpdate(req.params.userId, { $pull: { messages: { _id: req.params.messageId }}}, { new: true })
        .then(user => res.json(user))
        .catch(next)
+    console.log('Delete message')
  })
 
  // Events

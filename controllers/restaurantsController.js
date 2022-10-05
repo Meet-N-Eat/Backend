@@ -9,43 +9,48 @@ const searchBuilder = require('../middleware/searchBuilder')
 
 // Index
 // GET /restaurants
-router.get('/', requireToken, (req, res, next) => {
+router.get('/', (req, res, next) => {
   Restaurant.find({})
     .then((restaurants) => res.json(restaurants))
     .catch(next);
+  console.log('Get all restaurants')
 });
 
 // Show
 // GET /restaurants/:id
-router.get('/:id', requireToken, (req, res, next) => {
+router.get('/:id', (req, res, next) => {
   Restaurant.findById(req.params.id)
     .populate('userLikes')
     .then((restaurants) => res.json(restaurants))
     .catch(next);
+  console.log('Get restaurant by ID')
 });
 
 // Create
 // POST /restaurants
-router.post('/', requireToken, (req, res, next) => {
+router.post('/', (req, res, next) => {
   Restaurant.create(req.body)
     .then((restaurant) => res.status(201).json(restaurant))
     .catch(next);
+  console.log('Create restaurant')
 });
 
 // Update
 // PUT /restaurants/:id
-router.put('/:id', requireToken, (req, res, next) => {
+router.put('/:id', (req, res, next) => {
   Restaurant.findByIdAndUpdate(req.params.id, req.body, { new: true })
-  .then((restaurant) => res.json(restaurant))
-  .catch(next)
+    .then((restaurant) => res.json(restaurant))
+    .catch(next)
+  console.log('Update restaurant')
 });
 
 // Delete
 // DELETE /restaurants/:id
-router.delete('/:id', requireToken, (req, res, next) => {
+router.delete('/:id', (req, res, next) => {
   Restaurant.findByIdAndDelete(req.params.id)
    .then((restaurant) => res.json(restaurant))
    .catch(next)
+  console.log('Delete restaurant')
 });
 
 // Search Results
@@ -53,7 +58,7 @@ router.delete('/:id', requireToken, (req, res, next) => {
 
 // Get based on query parameters
 // GET /restaurants/results/:searchString
-router.get('/results/:searchString', requireToken, (req, res, next) => {
+router.get('/results/:searchString', (req, res, next) => {
   const queryParamsRegEx = searchBuilder(req.query)
   const searchStringRegEx = { $regex: '.*' + req.params.searchString + '.*', $options: 'i' }
 
@@ -92,6 +97,7 @@ router.get('/results/:searchString', requireToken, (req, res, next) => {
     .then(restaurants => res.json(restaurants))
     .catch(next)
   }
+  console.log('Search results')
 
 })
 
@@ -105,7 +111,7 @@ router.get('/:restaurantId/reviews', requireToken, (req, res, next) => {
     .select('reviews')
     .then(reviews => res.json(reviews))
     .catch(next)
-    console.log('got restaurant reviews')
+  console.log('got restaurant reviews')
 })
 
 // Create a Review
@@ -118,7 +124,7 @@ router.post('/:restaurantId/reviews', requireToken, (req, res, next) => {
         res.json(restaurant.reviews)
       })
       .catch(next)
-      console.log('review created')
+  console.log('review created')
 })
 
 // Delete a Review
@@ -127,6 +133,7 @@ router.delete('/:restaurantId/reviews/:reviewId', requireToken, (req, res, next)
   Restaurant.findByIdAndUpdate(req.params.restaurantId, { $pull: { reviews: { _id: req.params.reviewId }}}, { new: true })
     .then(restaurant => res.json(restaurant.reviews))
     .catch(next)
+  console.log('review deleted')
 })
 
 module.exports = router;

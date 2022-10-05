@@ -219,18 +219,12 @@ router.delete('/:userId/messages/:messageId', requireToken, (req, res, next) => 
 // ========================================================================================================
 
 // Create event
-// POST /users/events/sender/:senderId/restaurant/:restaurantId
-router.post('/events/sender/:senderId/restaurant/:restaurantId', requireToken, (req, res, next) => {
+// POST /users/events/create
+router.post('/events/create', requireToken, (req, res, next) => {
     User.find({ _id: { $in: req.body.participants } })
     .then(participants => {
 
-            const event = {
-                restaurant: req.params.restaurantId,
-                date: req.body.date,
-                participants: req.body.participants,
-                createdBy: req.params.senderId,
-                _id: new mongoose.Types.ObjectId
-            }
+            const event = { ...req.body, _id: new mongoose.Types.ObjectId }
 
             participants.forEach(participant => {
                 participant.events.push(event)
@@ -243,15 +237,15 @@ router.post('/events/sender/:senderId/restaurant/:restaurantId', requireToken, (
  })
 
 // Edit event - Must send eventId field in event from frontend, _id for event won't work across all participants
-// PUT /users/events/:eventId
-router.put('/events/:eventId', requireToken, (req, res, next) => {
+// PUT /users/events/edit
+router.put('/events/edit', requireToken, (req, res, next) => {
     // Get all users with the event
-    User.find({ 'events._id': req.params.eventId })
+    User.find({ 'events._id': req.body._id })
         .then(users => {
             // Delete event for users that do not appear in participants list
             users.forEach(user => {
                 if(!(req.body.participants.find(participantId => participantId == user._id))) {
-                    user.events = user.events.filter(event => event._id != req.params.eventId)
+                    user.events = user.events.filter(event => event._id != req.body._id)
                     user.save()
                 }
             })
@@ -261,7 +255,7 @@ router.put('/events/:eventId', requireToken, (req, res, next) => {
             .then(participants => {
                 // Edit event for participants already invited, or add event for new participants
                 participants.forEach(participant => {
-                    const index = participant.events.findIndex(event => event._id == req.params.eventId)
+                    const index = participant.events.findIndex(event => event._id == req.body._id)
                     
                     index != -1 ? participant.events[index] = req.body : participant.events.push(req.body)
                     participant.save()

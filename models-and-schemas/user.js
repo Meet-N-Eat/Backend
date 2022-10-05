@@ -1,6 +1,7 @@
 const mongoose = require('../db/connection')
 const messageSchema = require('./message')
 const friendInviteSchema = require('./friendInvite')
+const eventSchema = require('./event')
 const ObjectId = mongoose.Schema.Types.ObjectId
 
 const userSchema = new mongoose.Schema({
@@ -23,21 +24,7 @@ const userSchema = new mongoose.Schema({
   }],
   friendinvites: [friendInviteSchema],
   messages:[messageSchema],
-  events: [{
-    restaurant: {
-      type: ObjectId,
-      ref:'Restaurant'
-    },
-    participants: [{
-      type: ObjectId,
-      ref:'User'
-    }],
-    date: Date,
-    createdBy: {
-      type: ObjectId,
-      ref: 'User'
-    }
-  }],
+  events: [eventSchema],
   password: {
     type: String,
     required: true

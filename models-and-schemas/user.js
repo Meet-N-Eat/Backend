@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
   profileimg: String,
   location: String,
   about: String,
-  likedrestaurants: [{
+  favorites: [{
       type: ObjectId,
       ref: 'Restaurant'
   }],

@@ -26,7 +26,7 @@ router.get('/', requireToken, async (req, res, next) => {
 router.get('/:id', requireToken, async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id)
-        .populate('likedrestaurants')
+        .populate('favorites')
         .populate('friends')
         .populate('messages')
         .populate('events.restaurant')
@@ -43,7 +43,7 @@ router.get('/:id', requireToken, async (req, res, next) => {
 router.get('/username/:username', requireToken, async (req, res, next) => {
     try {
         const user = await User.findOne({ username: req.params.username })
-        .populate('likedrestaurants')
+        .populate('favorites')
         .populate('friends')
         .populate('messages')
         .populate('events.restaurant')
@@ -160,14 +160,14 @@ router.delete('/:userId/friends/:friendId', requireToken, (req, res, next) => {
     console.log('Delete friend')
 })
 
-// Liked Restaurants
+// Favorite Restaurants
 // ========================================================================================================
 
-// Create Liked Restaurant
-// POST /users/:userId/likedrestaurants/:restaurantId
-router.post('/:userId/likedrestaurants/:restaurantId', requireToken, (req, res, next) => {
-    User.findByIdAndUpdate(req.params.userId, { $push: { likedrestaurants: req.params.restaurantId }}, { new: true })
-        .populate('likedrestaurants')
+// Add to Favorite Restaurants
+// POST /users/:userId/favorites/:restaurantId
+router.post('/:userId/favorites/:restaurantId', requireToken, (req, res, next) => {
+    User.findByIdAndUpdate(req.params.userId, { $push: { favorites: req.params.restaurantId }}, { new: true })
+        .populate('favorites')
         .populate('friends')
         .populate('messages')
         .populate('events.restaurant')
@@ -178,11 +178,11 @@ router.post('/:userId/likedrestaurants/:restaurantId', requireToken, (req, res, 
     console.log('liked restaurant added')
 })
 
-// Delete Liked Restaurant
-// DELETE /users/:userId/likedrestaurants/:restaurantId
-router.delete('/:userId/likedrestaurants/:restaurantId', requireToken, (req, res, next) => {
-    User.findByIdAndUpdate(req.params.userId, { $pullAll: { likedrestaurants: [req.params.restaurantId] }}, { new: true })
-        .populate('likedrestaurants')
+// Delete from Favorite Restaurants
+// DELETE /users/:userId/favorites/:restaurantId
+router.delete('/:userId/favorites/:restaurantId', requireToken, (req, res, next) => {
+    User.findByIdAndUpdate(req.params.userId, { $pullAll: { favorites: [req.params.restaurantId] }}, { new: true })
+        .populate('favorites')
         .populate('friends')
         .populate('messages')
         .populate('events.restaurant')

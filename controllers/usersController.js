@@ -125,7 +125,7 @@ router.post('/:userId/friendInvites', requireToken, (req, res, next) => {
  })
  
  // Delete friend invite
- // DELETE /user/:userId/friendInvites/:inviteId
+ // DELETE /users/:userId/friendInvites/:inviteId
  router.delete('/:userId/friendInvites/:inviteId', requireToken, (req, res, next) => {
     User.findByIdAndUpdate(req.params.userId, { $pull: { friendinvites: { _id: req.params.inviteId}}}, { new: true })
        .then(user => res.json(user))

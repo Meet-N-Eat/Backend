@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
       ref: 'User'
   }],
   friendinvites: [friendInviteSchema],
-  messages:[messageSchema],
+  messages: [messageSchema],
   events: [eventSchema],
   password: {
     type: String,

@@ -235,15 +235,21 @@ router.delete('/:userId/messages/:messageId', requireToken, (req, res, next) => 
 // POST /users/events/create
 router.post('/events/create', requireToken, (req, res, next) => {
     User.find({ _id: { $in: req.body.participants } })
-    .then(participants => {
-
+        .then(participants => {
             const event = { ...req.body, _id: new mongoose.Types.ObjectId }
 
             participants.forEach(participant => {
                 participant.events.push(event)
                 participant.save()
             })
-            res.send('Event created')
+
+            User.findById(event.createdBy)
+                .populate('favorites')
+                .populate('friends')
+                .populate('messages')
+                .populate('events.restaurant')
+                .populate('events.participants')
+                .then(user => res.json(user))
         })
        .catch(next)
     console.log('Event created')

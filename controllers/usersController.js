@@ -243,15 +243,12 @@ router.post('/events/create', requireToken, (req, res, next) => {
                 participant.save()
             })
 
-            User.findById(event.createdBy)
-                .populate('favorites')
-                .populate('friends')
-                .populate('messages')
-                .populate('events.restaurant')
-                .populate('events.participants')
-                .then(user => res.json(user))
+            const creator = participants.find(participant => participant._id == event.createdBy)
+            creator
+                .populate('favorites friends messages events.restaurant events.participants')
+                .then(creator => res.json(creator))
         })
-       .catch(next)
+        .catch(next)
     console.log('Event created')
  })
 

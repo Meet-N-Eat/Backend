@@ -268,17 +268,20 @@ router.put('/events/edit', requireToken, (req, res, next) => {
 
             // Get all participants
             User.find({ _id: { $in: req.body.participants } })
-            .then(participants => {
-                // Edit event for participants already invited, or add event for new participants
-                participants.forEach(participant => {
-                    const index = participant.events.findIndex(event => event._id == req.body._id)
-                    
-                    index != -1 ? participant.events[index] = req.body : participant.events.push(req.body)
-                    participant.save()
-                })
-            })
+                .then(participants => {
+                    // Edit event for participants already invited, or add event for new participants
+                    participants.forEach(participant => {
+                        const index = participant.events.findIndex(event => event._id == req.body._id)
+                        
+                        index != -1 ? participant.events[index] = req.body : participant.events.push(req.body)
+                        participant.save()
+                    })
 
-            res.send('Event updated')
+                    const creator = participants.find(participant => participant._id == req.body.createdBy)
+                    creator
+                        .populate('favorites friends messages events.restaurant events.participants')
+                        .then(creator => res.json(creator))
+                })
         })
     .catch(next)
     console.log('Event updated')

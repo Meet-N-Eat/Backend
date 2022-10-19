@@ -29,8 +29,8 @@ router.get('/:id', requireToken, async (req, res, next) => {
         .populate('favorites')
         .populate('friends')
         .populate('messages')
-        .populate('events.restaurant')
-        .populate('events.participants')
+        // .populate('events.restaurant')
+        // .populate('events.participants')
         res.json(user)
     } catch(err) {
         next(err)
@@ -46,8 +46,8 @@ router.get('/username/:username', requireToken, async (req, res, next) => {
         .populate('favorites')
         .populate('friends')
         .populate('messages')
-        .populate('events.restaurant')
-        .populate('events.participants')
+        // .populate('events.restaurant')
+        // .populate('events.participants')
         res.json(user)
     } catch(err) {
         next(err)
@@ -245,7 +245,7 @@ router.post('/events/create', requireToken, (req, res, next) => {
 
             const creator = participants.find(participant => participant._id == event.createdBy)
             creator
-                .populate('favorites friends messages events.restaurant events.participants')
+                .populate('favorites friends messages')
                 .then(creator => res.json(creator))
         })
         .catch(next)
@@ -279,7 +279,7 @@ router.put('/events/edit', requireToken, (req, res, next) => {
 
                     const creator = participants.find(participant => participant._id == req.body.createdBy)
                     creator
-                        .populate('favorites friends messages events.restaurant events.participants')
+                        .populate('favorites friends messages')
                         .then(creator => res.json(creator))
                 })
         })

@@ -5,6 +5,7 @@ const Restaurant = require('../models-and-schemas/restaurant')
 const bcrypt = require('bcrypt')
 const { requireToken, createUserToken } = require('../middleware/auth');
 const { default: mongoose } = require('mongoose');
+const messageSchema = require('../models-and-schemas/message');
 
 // User CRUD
 // ========================================================================================================
@@ -204,6 +205,26 @@ router.get('/:userId/messages', requireToken, (req, res, next) => {
         .then(messages => res.json(messages))
         .catch(next)
     console.log('Get message by User ID')
+})
+
+// Get all message threads for a user
+// GET /users/:userId/messages/all
+router.get('/:userId/messages/all', requireToken, (req, res, next) => {
+    User.find({ 
+        $or: [
+            { "messages.sender": req.params.userId },
+            { "messages.recipient": req.params.userId }
+        ]
+    })
+        .then(users => {
+            let messages = []
+            users.forEach(user => {
+                messages = [...messages, ...user.messages.filter(message => message.sender == req.params.userId || message.recipient == req.params.userId)]
+            })
+            res.json(messages)
+        })
+        .catch(next)
+    console.log('Get all message threads')
 })
 
 // Create message

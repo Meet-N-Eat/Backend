@@ -228,9 +228,9 @@ router.get('/:userId/messages/all', requireToken, (req, res, next) => {
 })
 
 // Create message
-// POST /users/:recipientId/messages
-router.post('/:recipientId/messages', requireToken, (req, res, next) => {
-    User.findById(req.params.recipientId)
+// POST /users/messages/new
+router.post('/messages/new', requireToken, (req, res, next) => {
+    User.findById(req.body.recipient)
        .then(user => {
          user.messages.push(req.body)
          user.save()

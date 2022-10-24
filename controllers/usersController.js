@@ -207,7 +207,7 @@ router.get('/:userId/messages', requireToken, (req, res, next) => {
     console.log('Get message by User ID')
 })
 
-// Get all message threads for a user
+// Get all message threads
 // GET /users/:userId/messages/all
 router.get('/:userId/messages/all', requireToken, (req, res, next) => {
     User.find({ 
@@ -225,6 +225,25 @@ router.get('/:userId/messages/all', requireToken, (req, res, next) => {
         })
         .catch(next)
     console.log('Get all message threads')
+})
+
+// Get single thread
+// GET /users/:userId/messages/:friendId
+router.get('/:userId/messages/:friendId', requireToken, (req, res, next) => {
+    User.find({
+        $or: [
+            { _id: req.params.userId },
+            { _id: req.params.friendId }
+        ]
+    })
+        .then(users => {
+            let messages = []
+            users.forEach(user => {
+                messages = [...messages, ...user.messages.filter(message => message.sender == req.params.userId || message.sender == req.params.friendId)]
+            })
+            res.json(messages)
+        })
+        .catch(next)
 })
 
 // Create message
@@ -249,7 +268,7 @@ router.delete('/:userId/messages/:messageId', requireToken, (req, res, next) => 
     console.log('Delete message')
  })
 
- // Events
+// Events
 // ========================================================================================================
 
 // Create event

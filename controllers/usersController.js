@@ -268,7 +268,7 @@ router.delete('/:userId/messages/:messageId', requireToken, (req, res, next) => 
     console.log('Delete message')
  })
 
- // Events
+// Events
 // ========================================================================================================
 
 // Create event

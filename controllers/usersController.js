@@ -112,6 +112,15 @@ router.delete('/:id', requireToken, async (req, res, next) => {
 // Friend Invites
 // ========================================================================================================
 
+// Get friend invites by User ID
+// GET /users/:userId/friendInvites
+router.get('/:userId/friendInvites', requireToken, (req, res, next) => {
+    User.findById(req.params.userId)
+        .then(user => res.json(user.friendinvites))
+        .catch(next)
+    console.log('Get friend invites')
+})
+
 // Create friend invite
 // POST /users/:userId/friendInvites
 router.post('/:userId/friendInvites', requireToken, (req, res, next) => {
@@ -281,7 +290,7 @@ router.delete('/:userId/messages/:messageId', requireToken, (req, res, next) => 
 
 // Events
 // ========================================================================================================
-// Get event by User ID
+// Get events by User ID
 // GET /users/:userId/events
 router.get('/:userId/events', requireToken, (req, res, next) => {
     User.findById(req.params.userId)
@@ -291,8 +300,9 @@ router.get('/:userId/events', requireToken, (req, res, next) => {
         .populate('events.createdBy')
         .then(events => res.json(events))
         .catch(next)
-    console.log('Get event by User ID')
+    console.log('Get events by User ID')
 })
+
 // Create event
 // POST /users/events/create
 router.post('/events/create', requireToken, (req, res, next) => {

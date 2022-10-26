@@ -56,6 +56,21 @@ router.get('/username/:username', requireToken, async (req, res, next) => {
     console.log('Get users by username')
 })
 
+// Get profile card info
+// GET /users/:userId/profileCard
+router.get('/:userId/profileCard', requireToken, (req, res, next) => {
+    User.findById(req.params.userId)
+        .select(['username', 'displayname', 'profileimg'])
+        .then(user => {
+            const userData = {
+                username: user.username,
+                displayname: user.displayname,
+                profileimg: user.profileimg
+            }
+            res.json(userData)
+        })
+})
+
 // Sign Up
 // POST /users/signup
 router.post('/signup', (req, res, next) => {
@@ -290,6 +305,7 @@ router.delete('/:userId/messages/:messageId', requireToken, (req, res, next) => 
 
 // Events
 // ========================================================================================================
+
 // Get events by User ID
 // GET /users/:userId/events
 router.get('/:userId/events', requireToken, (req, res, next) => {

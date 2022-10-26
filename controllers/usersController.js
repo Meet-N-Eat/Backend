@@ -281,9 +281,18 @@ router.delete('/:userId/messages/:messageId', requireToken, (req, res, next) => 
 
 // Events
 // ========================================================================================================
-// Get events
-// GET /users/events
-
+// Get event by User ID
+// GET /users/:userId/events
+router.get('/:userId/events', requireToken, (req, res, next) => {
+    User.findById(req.params.userId)
+        .select('events')
+        .populate('events.restaurant')
+        .populate('events.participants')
+        .populate('events.createdBy')
+        .then(events => res.json(events))
+        .catch(next)
+    console.log('Get event by User ID')
+})
 // Create event
 // POST /users/events/create
 router.post('/events/create', requireToken, (req, res, next) => {

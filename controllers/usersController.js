@@ -298,8 +298,6 @@ router.delete('/:userId/messages/:messageId', requireToken, (req, res, next) => 
 // GET /users/:userId/events
 router.get('/:userId/events', requireToken, (req, res, next) => {
     User.findById(req.params.userId)
-        .populate('events.restaurant', 'name image_url display_phone price categories location.address1 location.city location.state')
-        .populate('events.participants', 'displayname username')
         .then(user => res.json(user.events))
         .catch(next)
     console.log('Get events by User ID')
@@ -345,18 +343,16 @@ router.put('/events/edit', requireToken, (req, res, next) => {
                     // Edit event for participants already invited, or add event for new participants
                     participants.forEach(participant => {
                         const index = participant.events.findIndex(event => event._id == req.body._id)
-                        
+
                         index != -1 ? participant.events[index] = req.body : participant.events.push(req.body)
                         participant.save()
                     })
 
-                    const creator = participants.find(participant => participant._id == req.body.createdBy)
-                    creator
-                        .then(() => res.send('Event updated'))
+                    res.send('Event updated')
                 })
         })
     .catch(next)
-    console.log('Event updated')
+    console.log('Edit event')
 })
 
 // Delete event - Must send eventId field in event from frontend, _id for event won't work across all participants
@@ -371,7 +367,7 @@ router.delete('/events/:eventId', requireToken, (req, res, next) => {
             res.send('Event deleted')
         })
         .catch(next)
-    console.log('Event deleted')
+    console.log('Delete event')
 })
 
 module.exports = router;

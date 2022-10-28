@@ -36,7 +36,8 @@ router.get('/:id', (req, res, next) => {
         }
       }
       res.json(data)
-    }) 
+    })
+  console.log('Get restaurant by ID') 
 })
 
 // Get Restaurant UserLikes
@@ -46,7 +47,7 @@ router.get('/:id/userLikes', (req, res, next) => {
     .populate('userLikes', 'displayname username')
     .then((restaurant) => res.json(restaurant.userLikes)) 
     .catch(next);
-  console.log('Get restaurant by ID')
+  console.log('Get user likes')
 });
 
 

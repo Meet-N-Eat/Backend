@@ -16,15 +16,39 @@ router.get('/', (req, res, next) => {
   console.log('Get all restaurants')
 });
 
-// Show
+// Get RestaurantDetail
 // GET /restaurants/:id
+
 router.get('/:id', (req, res, next) => {
   Restaurant.findById(req.params.id)
-    .populate('userLikes')
-    .then((restaurants) => res.json(restaurants))
+    .then((restaurant) => {
+      const data = {
+        _id: restaurant._id,
+        name: restaurant.name,
+        image_url: restaurant.image_url,
+        display_phone: restaurant.display_phone,
+        price: restaurant.price,
+        categories: restaurant.categories,
+        location: {
+          address1: restaurant.location.address1,
+          city: restaurant.location.city,
+          state: restaurant.location.state
+        }
+      }
+      res.json(data)
+    }) 
+})
+
+// Get Restaurant UserLikes
+// GET /restaurants/:id/userLikes
+router.get('/:id/userLikes', (req, res, next) => {
+  Restaurant.findById(req.params.id)
+    .populate('userLikes', 'displayname username')
+    .then((restaurant) => res.json(restaurant.userLikes)) 
     .catch(next);
   console.log('Get restaurant by ID')
 });
+
 
 // Create
 // POST /restaurants

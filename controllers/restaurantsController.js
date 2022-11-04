@@ -44,7 +44,7 @@ router.get('/:id', (req, res, next) => {
 // GET /restaurants/:id/userLikes
 router.get('/:id/userLikes', (req, res, next) => {
   Restaurant.findById(req.params.id)
-    .populate('userLikes', 'displayname username')
+    .populate('userLikes', 'displayname username about')
     .then((restaurant) => res.json(restaurant.userLikes)) 
     .catch(next);
   console.log('Get user likes')

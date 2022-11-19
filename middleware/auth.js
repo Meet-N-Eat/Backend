@@ -31,7 +31,7 @@ const createUserToken = (req, user) => {
 		throw err;
 	}
 
-	return jwt.sign({ id: user._id }, secret, { expiresIn: '24h' });
+	return jwt.sign({ id: user._id }, secret, { expiresIn: '5h' });
 };
 
 module.exports = {

@@ -5,7 +5,6 @@ const Restaurant = require('../models-and-schemas/restaurant')
 const bcrypt = require('bcrypt')
 const { requireToken, createUserToken } = require('../middleware/auth');
 const { default: mongoose } = require('mongoose');
-const messageSchema = require('../models-and-schemas/message');
 
 // User CRUD
 // ========================================================================================================
@@ -81,7 +80,15 @@ router.post('/signup', (req, res, next) => {
 router.post('/signin', (req, res, next) => {
     User.findOne({ username: req.body.username })
         .then(user => createUserToken(req, user))
-        .then(token => res.json({ token }))
+        .then(token => {
+            res.cookie('api-auth', token, {
+            secure: false,
+            httpOnly: true,
+            expires: new Date(Date.now() + 864000)
+            })
+            return token
+        })
+        .then(token => res.json({token}))
         .catch(next)
     console.log('Sign In')
 })
@@ -200,6 +207,7 @@ router.get('/:userId/favorites', requireToken, (req, res, next) => {
 // Add to Favorite Restaurants
 // POST /users/:userId/favorites/:restaurantId
 router.post('/:userId/favorites/:restaurantId', requireToken, (req, res, next) => {
+    console.log(req.cookies)
     User.findByIdAndUpdate(req.params.userId, { $push: { favorites: req.params.restaurantId }}, { new: true })
         .then(() => Restaurant.findByIdAndUpdate(req.params.restaurantId, { $push: {userLikes: req.params.userId}} ))
         .then(() => res.send('Favorite created'))

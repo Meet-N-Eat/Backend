@@ -81,14 +81,15 @@ router.post('/signin', (req, res, next) => {
     User.findOne({ username: req.body.username })
         .then(user => createUserToken(req, user))
         .then(token => {
-            res.cookie('api-auth', token, {
-            secure: false,
-            httpOnly: true,
-            expires: new Date(Date.now() + 864000)
-            })
-            return token
+            res
+                .cookie('api-auth', token, {
+                    secure: false,
+                    httpOnly: true,
+                    expires: new Date(Date.now() + 60 * 60 * 24)
+                })
+                .status(200)
+                .json({token})  
         })
-        .then(token => res.json({token}))
         .catch(next)
     console.log('Sign In')
 })
@@ -207,7 +208,6 @@ router.get('/:userId/favorites', requireToken, (req, res, next) => {
 // Add to Favorite Restaurants
 // POST /users/:userId/favorites/:restaurantId
 router.post('/:userId/favorites/:restaurantId', requireToken, (req, res, next) => {
-    console.log(req.cookies)
     User.findByIdAndUpdate(req.params.userId, { $push: { favorites: req.params.restaurantId }}, { new: true })
         .then(() => Restaurant.findByIdAndUpdate(req.params.restaurantId, { $push: {userLikes: req.params.userId}} ))
         .then(() => res.send('Favorite created'))

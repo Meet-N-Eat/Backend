@@ -92,7 +92,7 @@ router.post('/login', (req, res, next) => {
                     maxAge: 24 * 60 * 60 * 1000
                 })
                 .status(200)
-                .json({token})  
+                .json({token, user})  
         })
         .catch(next)
     console.log('Sign In')
@@ -107,10 +107,9 @@ router.get('/refresh', (req, res, next) => {
     User.findOne({ refreshToken })
         .then(user => {
             const { userId, token } = refreshUserToken(refreshToken, user)
-            console.log(userId, user._id)
             if(!user || userId != user._id) return res.sendStatus(403)
 
-            res.json({ token })
+            res.json({ token, user })
         })
         .catch(next)
     console.log('Refresh')

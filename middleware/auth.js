@@ -6,6 +6,7 @@ const User = require('../models-and-schemas/user')
 
 // Create a strategy
 const secret = process.env.JWT_SECRET
+const refreshSecret = process.env.JWT_REFRESH_SECRET
 const opts = {
 	jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 	secretOrKey: secret
@@ -31,10 +32,21 @@ const createUserToken = (req, user) => {
 		throw err;
 	}
 
-	return jwt.sign({ id: user._id }, secret, { expiresIn: '5h' });
+	return { 
+		token: jwt.sign({ id: user._id }, secret, { expiresIn: '30m' }), 
+		refreshToken: jwt.sign({ id: user._id }, refreshSecret, { expiresIn: '1d' })};
 };
+
+const refreshUserToken = (token, user) => {
+	const decoded = jwt.verify(token, refreshSecret)
+	
+	const newToken = jwt.sign({ id: user._id }, secret, { expiresIn: '30m' })
+
+	return { userId: decoded.id, token: newToken }
+}
 
 module.exports = {
 	requireToken,
 	createUserToken,
+	refreshUserToken,
 };

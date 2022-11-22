@@ -1,10 +1,10 @@
 const express = require('express');
+const mongoose = require('../db/connection')
 const router = express.Router();
 const User = require('../models-and-schemas/user')
 const Restaurant = require('../models-and-schemas/restaurant')
 const bcrypt = require('bcrypt')
-const { requireToken, createUserToken } = require('../middleware/auth');
-const { default: mongoose } = require('mongoose');
+const { requireToken, createUserToken, refreshUserToken } = require('../middleware/auth');
 
 // User CRUD
 // ========================================================================================================
@@ -22,8 +22,8 @@ router.get('/', requireToken, async (req, res, next) => {
 })
 
 // Get user by ID
-// GET /users/:id
-router.get('/:id', requireToken, async (req, res, next) => {
+// GET /users/id/:id
+router.get('/id/:id', requireToken, async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id)
         res.json(user)
@@ -58,6 +58,7 @@ router.get('/:userId/profileCard', requireToken, (req, res, next) => {
             }
             res.json(userData)
         })
+        .catch(next)
 })
 
 // Sign Up
@@ -75,23 +76,44 @@ router.post('/signup', (req, res, next) => {
     console.log('Sign Up')
 })
 
-// Sign In
-// POST /users/signin
-router.post('/signin', (req, res, next) => {
+// Login
+// POST /users/login
+router.post('/login', (req, res, next) => {
     User.findOne({ username: req.body.username })
-        .then(user => createUserToken(req, user))
-        .then(token => {
+        .then(user => {
+            const { token, refreshToken } = createUserToken(req, user)
+            user.refreshToken = refreshToken
+            user.save()
+
             res
-                .cookie('api-auth', token, {
+                .cookie('jwt', refreshToken, {
                     secure: false,
                     httpOnly: true,
-                    expires: new Date(Date.now() + 60 * 60 * 24)
+                    maxAge: 24 * 60 * 60 * 1000
                 })
                 .status(200)
                 .json({token})  
         })
         .catch(next)
     console.log('Sign In')
+})
+
+// Refresh
+// GET /users/refresh
+router.get('/refresh', (req, res, next) => {
+    if(!req.cookies?.jwt) return res.sendStatus(401)
+    const refreshToken = req.cookies.jwt
+
+    User.findOne({ refreshToken })
+        .then(user => {
+            const { userId, token } = refreshUserToken(refreshToken, user)
+            console.log(userId, user._id)
+            if(!user || userId != user._id) return res.sendStatus(403)
+
+            res.json({ token })
+        })
+        .catch(next)
+    console.log('Refresh')
 })
 
 // Update

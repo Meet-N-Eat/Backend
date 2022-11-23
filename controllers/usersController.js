@@ -95,24 +95,44 @@ router.post('/login', (req, res, next) => {
                 .json({token, user})  
         })
         .catch(next)
-    console.log('Sign In')
+    console.log('Login')
 })
 
 // Refresh
 // GET /users/refresh
 router.get('/refresh', (req, res, next) => {
-    if(!req.cookies?.jwt) return res.sendStatus(401)
+    if(!req.cookies?.jwt) res.sendStatus(401)
     const refreshToken = req.cookies.jwt
 
     User.findOne({ refreshToken })
         .then(user => {
             const { userId, token } = refreshUserToken(refreshToken, user)
-            if(!user || userId != user._id) return res.sendStatus(403)
+            if(!user || userId != user._id) res.sendStatus(403)
 
             res.json({ token, user })
         })
         .catch(next)
     console.log('Refresh')
+})
+
+// Logout
+// GET /users/logout
+router.get('/logout', (req, res, next) => {
+    if(!req.cookies?.jwt) res.sendStatus(204)
+    const refreshToken = req.cookies.jwt
+
+    User.findOne({ refreshToken })
+        .then(user => {
+            if(!user) {
+                res.clearCookie('jwt', {secure: false, httpOnly: true}).sendStatus(204)
+            }
+            user.refreshToken = ''
+            user.save()
+
+            res.clearCookie('jwt', {secure: false, httpOnly: true}).sendStatus(204)
+        })
+        .catch(next)
+    console.log('Logout')
 })
 
 // Update
